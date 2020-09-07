@@ -5,9 +5,9 @@ const DOMController = (() => {
     const elem = document.querySelector('.collapsible');
     const collapsibleInstance = M.Collapsible.init(elem);
     const elems = document.querySelectorAll('.modal');
-    let modalInstance = M.Modal.init(elems)[0];
+    const modalInstance = M.Modal.init(elems)[0];
     const projectForm = document.querySelector('#project-form');
-    projectForm.onsubmit = saveProject.bind();
+    projectForm.onsubmit = addProject.bind();
 
     const renderProjects = () => {
         const projects = ProjectController.getProjects();
@@ -79,7 +79,7 @@ const DOMController = (() => {
         projectDeleteBtn.addEventListener('click', () => removeProject(projectLi.id));
     }
 
-    function saveProject(e) {
+    function addProject(e) {
         e.preventDefault();
         clearProjectsMessages();
         const project = {

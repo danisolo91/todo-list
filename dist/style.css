@@ -11,6 +11,15 @@
     border-radius: 3px;
 }
 
+.no-projects-msg {
+    text-align: center;
+    padding-bottom: 15px;
+}
+
 .due-date {
     font-size: 1.1rem;
+}
+
+.mr-10 { 
+    margin-right: 10px;
 }

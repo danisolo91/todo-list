@@ -13,43 +13,28 @@
 <body>
     <div class="container">
         <h1>myTODOs</h1>
-        <a class="waves-effect waves-light btn"><i class="material-icons left">library_add</i>New project</a>
-        <ul class="collapsible">
-            <li class="active">
-                <div class="collapsible-header"><i class="material-icons">library_books</i>First</div>
-                <div class="collapsible-body">
-                    <div class="project-options">
-                        <span class="due-date">Due date: 24/11/2020</span>
-                        <a class="waves-effect waves-light cyan btn-small"><i class="material-icons left">playlist_add</i>add todo</a>
-                        <a class="waves-effect waves-light btn-small"><i class="material-icons left">edit</i>edit project</a>
-                        <a class="waves-effect waves-light btn-small"><i class="material-icons left">delete</i>delete project</a>
+        <a id="add-project" class="waves-effect waves-light btn modal-trigger" href="#project-form"><i class="material-icons left">library_add</i>New project</a>
+        <ul class="collapsible"></ul>
+    </div>
+    <div id="project-form" class="modal">
+        <div class="modal-content">
+            <h4>Project</h4>
+            <div class="row">
+                <form class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <input id="projectName" type="text">
+                            <label for="projectName">Project name</label>  
+                        </div>
                     </div>
-                    <span>Lorem ipsum dolor sit amet.</span>
-                </div>
-            </li>
-            <li>
-                <div class="collapsible-header"><i class="material-icons">library_books</i>Second</div>
-                <div class="collapsible-body">
-                    <div class="project-options">
-                        <a class="waves-effect waves-light cyan btn-small"><i class="material-icons left">playlist_add</i>add todo</a>
-                        <a class="waves-effect waves-light btn-small"><i class="material-icons left">edit</i>edit project</a>
-                        <a class="waves-effect waves-light btn-small"><i class="material-icons left">delete</i>delete project</a>
+                    <div class="row">
+                        <button type="submit" class="btn waves-effect waves-light">Submit
+                            <i class="material-icons right">send</i>
+                        </button>
                     </div>
-                    <span>Lorem ipsum dolor sit amet.</span>
-                </div>
-            </li>
-            <li>
-                <div class="collapsible-header"><i class="material-icons">library_books</i>Third</div>
-                <div class="collapsible-body">
-                    <div class="project-options">
-                        <a class="waves-effect waves-light cyan btn-small"><i class="material-icons left">playlist_add</i>add todo</a>
-                        <a class="waves-effect waves-light btn-small"><i class="material-icons left">edit</i>edit project</a>
-                        <a class="waves-effect waves-light btn-small"><i class="material-icons left">delete</i>delete project</a>
-                    </div>
-                    <span>Lorem ipsum dolor sit amet.</span>
-                </div>
-            </li>
-        </ul>
+                </form>
+            </div>
+        </div>
     </div>
     <script src="main.js"></script>
 </body>

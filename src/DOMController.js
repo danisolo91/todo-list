@@ -15,14 +15,14 @@ const DOMController = (() => {
             clearProjectsMessages();
             projects.forEach((project, i) => {
                 const projectLi = createProject(project, i);
-                elem.appendChild(projectLi);
                 loadProjectEvents(projectLi);
+                elem.appendChild(projectLi);
             });
+            collapsibleInstance.open(0);
         } else {
             showNoProjectsMsg();
         }
-        collapsibleInstance.open(0);
-    }
+    };
 
     const createProject = (project, id) => {
         const projectLi = document.createElement('li');
@@ -72,52 +72,91 @@ const DOMController = (() => {
         projectLi.appendChild(projectBody);
 
         return projectLi;
-    }
+    };
 
     const loadProjectEvents = (projectLi) => {
         const projectDeleteBtn = projectLi.querySelector('a[data-btn-type="delete"]');
-        projectDeleteBtn.addEventListener('click', () => removeProject(projectLi.id));
-    }
+        const projectEditBtn = projectLi.querySelector('a[data-btn-type="edit"]');
+
+        projectDeleteBtn.addEventListener('click', () => removeProject(projectLi));
+        projectEditBtn.addEventListener('click', () => editProject(projectLi));
+    };
 
     function addProject(e) {
         e.preventDefault();
         clearProjectsMessages();
+
         const project = {
             'name': `${e.target.elements.projectName.value}`,
             'todos': []
         }
-        const projectId = ProjectController.addProject(project);
-        const projectLi = createProject(project, projectId);
-        elem.appendChild(projectLi);
-        loadProjectEvents(projectLi);
-        collapsibleInstance.open(projectId);
+
+        if (e.target.elements.projectId.value === 'new') {
+            // Add new project
+            const projectId = ProjectController.addProject(project);
+            const projectLi = createProject(project, projectId);
+
+            loadProjectEvents(projectLi);
+            elem.appendChild(projectLi);
+            collapsibleInstance.open(projectId);
+        } else {
+            // Edit existing project
+            const projectId = e.target.elements.projectId.value;
+            const projectHeader = document.querySelector(`#pr-${projectId}`).firstChild;
+
+            ProjectController.editProject(projectId, project);
+            projectHeader.innerHTML = (
+                '<i class="material-icons">library_books</i>' 
+                + project.name
+            );
+        }
+
         modalInstance.close();
+        e.target.elements.projectId.value = 'new';
         e.target.elements.projectName.value = null;
     }
 
-    const removeProject = (projectId) => {
-        elem.removeChild(elem.querySelector(`#${projectId}`));
-        ProjectController.removeProject(getNumberId(projectId));
+    const editProject = (projectLi) => {
+        const projectId = getNumberId(projectLi.id);
+        const project = ProjectController.getProject(projectId);
+        const projectIdInput = document.querySelector('input#projectId');
+        const projectNameInput = document.querySelector('input#projectName');
+        projectIdInput.value = projectId;
+        projectNameInput.value = project.name;
+
+        modalInstance.open();
+        /**
+         * FIXME: projectIdInput to 'new' 
+         * and projectNameInput to null 
+         * when close modal without submit
+         */
+    };
+
+    const removeProject = (projectLi) => {
+        elem.removeChild(projectLi);
+        ProjectController.removeProject(getNumberId(projectLi.id));
         if(!elem.firstChild) {
             showNoProjectsMsg();
+        } else {
+            collapsibleInstance.open(0);
         }
-    }
+    };
 
     const getNumberId = (elemId) => {
-        return parseInt(elemId.slice(2));
-    }
+        return Number(elemId.slice(3));
+    };
 
     const showNoProjectsMsg = () => {
         const msgPara = document.createElement('p');
         msgPara.className = 'no-projects-msg';
         msgPara.innerText = 'There are no projects.';
         elem.appendChild(msgPara);
-    }
+    };
 
     const clearProjectsMessages = () => {
         const msgElem = elem.querySelector('.no-projects-msg');
         if(msgElem) elem.removeChild(msgElem);
-    }
+    };
 
     return { renderProjects }
 })();

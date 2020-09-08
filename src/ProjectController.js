@@ -42,7 +42,7 @@ const ProjectController = (() => {
 
     const editProject = (projectId, project) => {
         const projects = getProjects();
-        projects[projectId] = project;
+        projects[projectId].name = project.name;
         saveProjects(projects);
     }
 

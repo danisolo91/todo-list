@@ -5,12 +5,16 @@ const DOMController = (() => {
     const elem = document.querySelector('.collapsible');
     const collapsibleInstance = M.Collapsible.init(elem);
     const elems = document.querySelectorAll('.modal');
-    const modalInstance = M.Modal.init(elems)[0];
+    const modalInstance = M.Modal.init(elems, {
+        onCloseStart: () => (clearProjectForm()),
+    })[0];
     const projectForm = document.querySelector('#project-form');
+
     projectForm.onsubmit = addProject.bind();
 
     const renderProjects = () => {
         const projects = ProjectController.getProjects();
+
         if(projects.length > 0) {
             clearProjectsMessages();
             projects.forEach((project, i) => {
@@ -112,8 +116,6 @@ const DOMController = (() => {
         }
 
         modalInstance.close();
-        e.target.elements.projectId.value = 'new';
-        e.target.elements.projectName.value = null;
     }
 
     const editProject = (projectLi) => {
@@ -121,20 +123,19 @@ const DOMController = (() => {
         const project = ProjectController.getProject(projectId);
         const projectIdInput = document.querySelector('input#projectId');
         const projectNameInput = document.querySelector('input#projectName');
+        const projectNameLabel = projectNameInput.nextElementSibling;
+
         projectIdInput.value = projectId;
         projectNameInput.value = project.name;
+        projectNameLabel.className = 'active';
 
         modalInstance.open();
-        /**
-         * FIXME: projectIdInput to 'new' 
-         * and projectNameInput to null 
-         * when close modal without submit
-         */
     };
 
     const removeProject = (projectLi) => {
         elem.removeChild(projectLi);
         ProjectController.removeProject(getNumberId(projectLi.id));
+        
         if(!elem.firstChild) {
             showNoProjectsMsg();
         } else {
@@ -148,6 +149,7 @@ const DOMController = (() => {
 
     const showNoProjectsMsg = () => {
         const msgPara = document.createElement('p');
+
         msgPara.className = 'no-projects-msg';
         msgPara.innerText = 'There are no projects.';
         elem.appendChild(msgPara);
@@ -156,6 +158,16 @@ const DOMController = (() => {
     const clearProjectsMessages = () => {
         const msgElem = elem.querySelector('.no-projects-msg');
         if(msgElem) elem.removeChild(msgElem);
+    };
+
+    function clearProjectForm() {
+        const projectIdInput = document.querySelector('input#projectId');
+        const projectNameInput = document.querySelector('input#projectName');
+        const projectNameLabel = projectNameInput.nextElementSibling;
+        
+        projectIdInput.value = 'new';
+        projectNameInput.value = null;
+        projectNameLabel.removeAttribute('class');
     };
 
     return { renderProjects }

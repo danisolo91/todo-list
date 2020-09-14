@@ -1,17 +1,17 @@
 const ProjectController = (() => {
     const sampleProjects = [
         {
-            'name': 'Default',
-            'todos': [
+            name: 'Default',
+            todos: [
                 {
-                    'title': 'Go to gym',
-                    'description': 'Grow muscles',
-                    'done': false
+                    title: 'Go to gym',
+                    description: 'Grow muscles',
+                    done: false
                 },
                 {
-                    'title': 'Parachute jump',
-                    'description': 'Parachute jump from the stratosphere',
-                    'done': false
+                    title: 'Parachute jump',
+                    description: 'Parachute jump from the stratosphere',
+                    done: false
                 }
             ]
         }
@@ -52,12 +52,48 @@ const ProjectController = (() => {
         saveProjects(projects);
     }
 
+    const addTodo = (projectId, todo) => {
+        const projects = getProjects();
+        const index = projects[projectId].todos.push(todo) - 1;
+        saveProjects(projects);
+        return index;
+    }
+
+    const editTodo = (projectId, todoId, todo) => {
+        const projects = getProjects();
+        projects[projectId].todos[todoId] = todo;
+        saveProjects(projects);
+    }
+
+    const changeTodoStatus = (projectId, todoId) => {
+        const projects = getProjects();
+        let result = false;
+        if(projects[projectId].todos[todoId].done === false) {
+            projects[projectId].todos[todoId].done = true;
+            result  = true;
+        } else {
+            projects[projectId].todos[todoId].done = false;
+        }
+        saveProjects(projects);
+        return result;
+    }
+
+    const removeTodo = (projectId, todoId) => {
+        const projects = getProjects();
+        projects[projectId].todos.splice(todoId, 1);
+        saveProjects(projects);
+    }
+
     return { 
         getProjects, 
         getProject, 
         addProject, 
         editProject, 
-        removeProject 
+        removeProject,
+        addTodo,
+        editTodo,
+        changeTodoStatus,
+        removeTodo,
     }
 })();
 

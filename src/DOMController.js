@@ -4,13 +4,15 @@ import ProjectController from './ProjectController';
 const DOMController = (() => {
     const elem = document.querySelector('.collapsible');
     const collapsibleInstance = M.Collapsible.init(elem);
-    const elems = document.querySelectorAll('.modal');
-    const modalInstance = M.Modal.init(elems, {
-        onCloseStart: () => (clearProjectForm()),
-    })[0];
     const projectForm = document.querySelector('#project-form');
+    const todoForm = document.querySelector('#todo-form');
+    const modalInstance = M.Modal.init(projectForm, {
+        onCloseStart: () => (clearProjectForm()),
+    });
+    const todoModalInstance = M.Modal.init(todoForm);
 
     projectForm.onsubmit = addProject.bind();
+    todoForm.onsubmit = addTodo.bind();
 
     const renderProjects = () => {
         const projects = ProjectController.getProjects();
@@ -40,8 +42,9 @@ const DOMController = (() => {
         const projectEditIco = document.createElement('i');
         const projectDeleteBtn = document.createElement('a');
         const projectDeleteIco = document.createElement('i');
+        const projectTodos = document.createElement('ul');
 
-        projectLi.id = `pr-${id}`;
+        projectLi.id = `pr-${ id }`;
         projectHeader.className = 'collapsible-header';
         projectIcon.className = 'material-icons';
         projectIcon.innerText = 'library_books';
@@ -49,6 +52,7 @@ const DOMController = (() => {
         projectOptions.className = 'project-options';
         projectAddTodoBtn.classList = 'pr-addtodo waves-effect waves-light cyan btn-small';
         projectAddTodoBtn.setAttribute("data-btn-type", "add");
+        //projectAddTodoBtn.href = '#todo-form';
         projectAddTodoIco.classList = 'material-icons left';
         projectAddTodoIco.innerText = 'playlist_add';
         projectEditBtn.classList = 'pr-edit waves-effect waves-light btn-small';
@@ -59,6 +63,15 @@ const DOMController = (() => {
         projectDeleteBtn.setAttribute("data-btn-type", "delete");
         projectDeleteIco.classList = 'material-icons left';
         projectDeleteIco.innerText = 'delete';
+        projectTodos.className = 'collection';
+
+        if(project.todos.length > 0) {
+            project.todos.forEach((todo, i) => {
+                const todoLi = createTodo(todo, i);
+                loadTodoEvents(todoLi);
+                projectTodos.appendChild(todoLi);
+            });
+        }
 
         projectAddTodoBtn.appendChild(projectAddTodoIco);
         projectAddTodoBtn.appendChild(document.createTextNode('add todo'));
@@ -70,6 +83,7 @@ const DOMController = (() => {
         projectOptions.appendChild(projectEditBtn);
         projectOptions.appendChild(projectDeleteBtn);
         projectBody.appendChild(projectOptions);
+        projectBody.appendChild(projectTodos);
         projectHeader.appendChild(projectIcon);
         projectHeader.appendChild(document.createTextNode(project.name));
         projectLi.appendChild(projectHeader);
@@ -81,9 +95,11 @@ const DOMController = (() => {
     const loadProjectEvents = (projectLi) => {
         const projectDeleteBtn = projectLi.querySelector('a[data-btn-type="delete"]');
         const projectEditBtn = projectLi.querySelector('a[data-btn-type="edit"]');
+        const projectAddTodoBtn = projectLi.querySelector('a[data-btn-type="add"]');
 
         projectDeleteBtn.addEventListener('click', () => removeProject(projectLi));
         projectEditBtn.addEventListener('click', () => editProject(projectLi));
+        projectAddTodoBtn.addEventListener('click', () => loadTodoModal(projectLi));
     };
 
     function addProject(e) {
@@ -91,9 +107,9 @@ const DOMController = (() => {
         clearProjectsMessages();
 
         const project = {
-            'name': `${e.target.elements.projectName.value}`,
-            'todos': []
-        }
+            name: `${e.target.elements.projectName.value}`,
+            todos: []
+        };
 
         if (e.target.elements.projectId.value === 'new') {
             // Add new project
@@ -168,6 +184,76 @@ const DOMController = (() => {
         projectIdInput.value = 'new';
         projectNameInput.value = null;
         projectNameLabel.removeAttribute('class');
+    };
+
+    const createTodo = (todo, id) => {
+        const todoLi = document.createElement('li');
+        const todoDiv = document.createElement('div');
+        
+        todoDiv.innerHTML = `
+            ${ todo.title }
+            <a class="secondary-content cursor-pointer ml-10" data-btn-type="delete">
+                <i class="material-icons">delete</i>
+            </a>
+            <a class="secondary-content cursor-pointer" data-btn-type="edit">
+                <i class="material-icons">edit</i>
+            </a>
+        `;
+
+        todoLi.id = `td-${ id }`;
+        todoLi.className = 'collection-item';
+        todoLi.appendChild(todoDiv);
+
+        return todoLi;
+    };
+
+    const loadTodoEvents = (todoLi) => {
+        const todoDeleteBtn = todoLi.querySelector('a[data-btn-type="delete"]');
+        const todoEditBtn = todoLi.querySelector('a[data-btn-type="edit"]');
+
+        todoDeleteBtn.addEventListener('click', () => removeTodo(todoLi));
+    };
+
+    const loadTodoModal = (projectLi) => {
+        const todoForm = document.querySelector('#form-todo');
+        const projectIdInput = document.createElement('input');
+        
+        projectIdInput.type = 'hidden';
+        projectIdInput.id = 'todoProjectId';
+        projectIdInput.value = projectLi.id;
+
+        todoForm.appendChild(projectIdInput);
+
+        todoModalInstance.open();
+    }
+
+    function addTodo(e) {
+        e.preventDefault();
+
+        const projectId = e.target.elements.todoProjectId.value;
+        const projectTodos = document.querySelector(`#${ projectId }`).querySelector('.collection');
+        const todo = {
+            title: e.target.elements.todoTitle.value,
+            description: e.target.elements.todoDescription.value,
+            done: false
+        };
+
+        const todoId = ProjectController.addTodo(getNumberId(projectId), todo);
+        const todoLi = createTodo(todo, todoId);
+        loadTodoEvents(todoLi);
+        projectTodos.appendChild(todoLi);
+
+        todoModalInstance.close();
+    }
+
+    const removeTodo = (todoLi) => {
+        const projectLi = todoLi.closest('li.active');
+        const projectTodos = projectLi.querySelector('.collection');
+        const projectId = getNumberId(projectLi.id);
+        const todoId = getNumberId(todoLi.id);
+
+        ProjectController.removeTodo(projectId, todoId);
+        projectTodos.removeChild(todoLi);
     };
 
     return { renderProjects }

@@ -1,4 +1,6 @@
 
+textarea:focus { outline: none; }
+
 .project-options {
     display: grid;
     grid-auto-flow: column;
@@ -20,6 +22,11 @@
     font-size: 1.1rem;
 }
 
-.mr-10 { 
-    margin-right: 10px;
+.mr-10 { margin-right: 10px; }
+.ml-10 { margin-left: 10px; }
+
+
+
+.cursor-pointer {
+    cursor: pointer;
 }

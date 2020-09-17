@@ -9,7 +9,9 @@ const DOMController = (() => {
     const modalInstance = M.Modal.init(projectForm, {
         onCloseStart: () => (clearProjectForm()),
     });
-    const todoModalInstance = M.Modal.init(todoForm);
+    const todoModalInstance = M.Modal.init(todoForm, {
+        onCloseStart: () => (clearTodoForm()),
+    });
 
     projectForm.onsubmit = addProject.bind();
     todoForm.onsubmit = addTodo.bind();
@@ -52,7 +54,6 @@ const DOMController = (() => {
         projectOptions.className = 'project-options';
         projectAddTodoBtn.classList = 'pr-addtodo waves-effect waves-light cyan btn-small';
         projectAddTodoBtn.setAttribute("data-btn-type", "add");
-        //projectAddTodoBtn.href = '#todo-form';
         projectAddTodoIco.classList = 'material-icons left';
         projectAddTodoIco.innerText = 'playlist_add';
         projectEditBtn.classList = 'pr-edit waves-effect waves-light btn-small';
@@ -254,6 +255,23 @@ const DOMController = (() => {
 
         ProjectController.removeTodo(projectId, todoId);
         projectTodos.removeChild(todoLi);
+    };
+
+    const clearTodoForm = () => {
+        const todoForm = document.querySelector('#form-todo');
+        const todoProjectInput = todoForm.querySelector('#todoProjectId');
+        const todoId = todoForm.querySelector('#todoId');
+        const todoTitle = todoForm.querySelector('#todoTitle');
+        const todoTitleLabel = todoTitle.nextElementSibling;
+        const todoDescription = todoForm.querySelector('#todoDescription');
+        const todoDescriptionLabel = todoDescription.nextElementSibling;
+
+        todoForm.removeChild(todoProjectInput);
+        todoId.value = 'new';
+        todoTitle.value = null;
+        todoTitleLabel.removeAttribute('class');
+        todoDescription.value = null;
+        todoDescriptionLabel.removeAttribute('class');
     };
 
     return { renderProjects }

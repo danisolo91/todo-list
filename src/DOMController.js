@@ -213,17 +213,30 @@ const DOMController = (() => {
         const todoEditBtn = todoLi.querySelector('a[data-btn-type="edit"]');
 
         todoDeleteBtn.addEventListener('click', () => removeTodo(todoLi));
+        todoEditBtn.addEventListener('click', () => editTodo(todoLi));
     };
 
-    const loadTodoModal = (projectLi) => {
-        const todoForm = document.querySelector('#form-todo');
-        const projectIdInput = document.createElement('input');
-        
-        projectIdInput.type = 'hidden';
-        projectIdInput.id = 'todoProjectId';
+    const loadTodoModal = (projectLi, todoLi = null) => {
+        const projectIdInput = document.querySelector('#todoProjectId');
         projectIdInput.value = projectLi.id;
 
-        todoForm.appendChild(projectIdInput);
+        if(todoLi != null) {
+            const todoIdInput = document.querySelector('#todoId');
+            const todoTitle = document.querySelector('#todoTitle');
+            const todoTitleLabel = todoTitle.nextElementSibling;
+            const todoDescription = document.querySelector('#todoDescription');
+            const todoDescriptionLabel = todoDescription.nextElementSibling;
+            const todo = ProjectController.getTodo(
+                getNumberId(projectLi.id),
+                getNumberId(todoLi.id),
+            );
+
+            todoIdInput.value = todoLi.id;
+            todoTitle.value = todo.title;
+            todoDescription.value = todo.description;
+            todoTitleLabel.className = 'active';
+            todoDescriptionLabel.className = 'active';
+        }
 
         todoModalInstance.open();
     }
@@ -232,20 +245,39 @@ const DOMController = (() => {
         e.preventDefault();
 
         const projectId = e.target.elements.todoProjectId.value;
-        const projectTodos = document.querySelector(`#${ projectId }`).querySelector('.collection');
         const todo = {
             title: e.target.elements.todoTitle.value,
             description: e.target.elements.todoDescription.value,
             done: false
         };
 
-        const todoId = ProjectController.addTodo(getNumberId(projectId), todo);
-        const todoLi = createTodo(todo, todoId);
-        loadTodoEvents(todoLi);
-        projectTodos.appendChild(todoLi);
+        const todoIdInput = e.target.elements.todoId.value;
+
+        if(todoIdInput === 'new') {
+            // Add new TODO to project
+            const projectTodos = document.querySelector(`#${ projectId }`).querySelector('.collection');
+            const todoId = ProjectController.addTodo(getNumberId(projectId), todo);
+            const todoLi = createTodo(todo, todoId);
+            loadTodoEvents(todoLi);
+            projectTodos.appendChild(todoLi);
+        } else {
+            // Edit existing TODO
+            const todoTitleNode = document.querySelector(`#${ todoIdInput }`).firstChild.firstChild;
+            todoTitleNode.textContent = todo.title;
+            ProjectController.editTodo(
+                getNumberId(projectId), 
+                getNumberId(todoIdInput), 
+                todo,
+            );
+        }
 
         todoModalInstance.close();
     }
+
+    const editTodo = (todoLi) => {
+        const projectLi = document.querySelector(`#${ todoLi.id }`).closest('.active');
+        loadTodoModal(projectLi, todoLi);
+    };
 
     const removeTodo = (todoLi) => {
         const projectLi = todoLi.closest('li.active');
@@ -258,7 +290,6 @@ const DOMController = (() => {
     };
 
     const clearTodoForm = () => {
-        const todoForm = document.querySelector('#form-todo');
         const todoProjectInput = todoForm.querySelector('#todoProjectId');
         const todoId = todoForm.querySelector('#todoId');
         const todoTitle = todoForm.querySelector('#todoTitle');
@@ -266,7 +297,7 @@ const DOMController = (() => {
         const todoDescription = todoForm.querySelector('#todoDescription');
         const todoDescriptionLabel = todoDescription.nextElementSibling;
 
-        todoForm.removeChild(todoProjectInput);
+        todoProjectInput.removeAttribute('value');
         todoId.value = 'new';
         todoTitle.value = null;
         todoTitleLabel.removeAttribute('class');

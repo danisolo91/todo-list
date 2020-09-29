@@ -192,7 +192,7 @@ const DOMController = (() => {
         const todoDiv = document.createElement('div');
         
         todoDiv.innerHTML = `
-            ${ todo.title }
+            <span id="todo-title">${ todo.title }</span>
             <a class="secondary-content cursor-pointer ml-10" data-btn-type="delete">
                 <i class="material-icons">delete</i>
             </a>
@@ -211,9 +211,11 @@ const DOMController = (() => {
     const loadTodoEvents = (todoLi) => {
         const todoDeleteBtn = todoLi.querySelector('a[data-btn-type="delete"]');
         const todoEditBtn = todoLi.querySelector('a[data-btn-type="edit"]');
+        const todoTitleSpan = todoLi.querySelector('span');
 
         todoDeleteBtn.addEventListener('click', () => removeTodo(todoLi));
         todoEditBtn.addEventListener('click', () => editTodo(todoLi));
+        todoTitleSpan.addEventListener('click', () => changeTodoStatus(todoLi));
     };
 
     const loadTodoModal = (projectLi, todoLi = null) => {
@@ -248,22 +250,24 @@ const DOMController = (() => {
         const todo = {
             title: e.target.elements.todoTitle.value,
             description: e.target.elements.todoDescription.value,
-            done: false
+            isDone: false,
         };
 
         const todoIdInput = e.target.elements.todoId.value;
 
         if(todoIdInput === 'new') {
             // Add new TODO to project
-            const projectTodos = document.querySelector(`#${ projectId }`).querySelector('.collection');
+            const projectTodos = document.querySelector(`#${ projectId }`)
+                .querySelector('.collection');
             const todoId = ProjectController.addTodo(getNumberId(projectId), todo);
             const todoLi = createTodo(todo, todoId);
             loadTodoEvents(todoLi);
             projectTodos.appendChild(todoLi);
         } else {
             // Edit existing TODO
-            const todoTitleNode = document.querySelector(`#${ todoIdInput }`).firstChild.firstChild;
-            todoTitleNode.textContent = todo.title;
+            const todoTitleSpan = document.querySelector(`#${ todoIdInput }`)
+                .querySelector('#todo-title');
+            todoTitleSpan.textContent = todo.title;
             ProjectController.editTodo(
                 getNumberId(projectId), 
                 getNumberId(todoIdInput), 
@@ -275,7 +279,7 @@ const DOMController = (() => {
     }
 
     const editTodo = (todoLi) => {
-        const projectLi = document.querySelector(`#${ todoLi.id }`).closest('.active');
+        const projectLi = todoLi.closest('li.active');
         loadTodoModal(projectLi, todoLi);
     };
 
@@ -287,6 +291,19 @@ const DOMController = (() => {
 
         ProjectController.removeTodo(projectId, todoId);
         projectTodos.removeChild(todoLi);
+    };
+
+    const changeTodoStatus = (todoLi) => {
+        const todoTitle = todoLi.querySelector('#todo-title');
+        const projectId = getNumberId(todoLi.closest('li.active').id);
+        const todoId = getNumberId(todoLi.id);
+        const todoIsDone = ProjectController.changeTodoStatus(projectId, todoId);
+
+        if(todoIsDone === true) {
+            todoTitle.className = 'done';
+        } else {
+            todoTitle.removeAttribute('class');
+        }
     };
 
     const clearTodoForm = () => {

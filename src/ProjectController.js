@@ -6,12 +6,12 @@ const ProjectController = (() => {
                 {
                     title: 'Go to gym',
                     description: 'Grow muscles',
-                    done: false
+                    isDone: false
                 },
                 {
                     title: 'Parachute jump',
                     description: 'Parachute jump from the stratosphere',
-                    done: false
+                    isDone: false
                 }
             ]
         }
@@ -73,11 +73,11 @@ const ProjectController = (() => {
     const changeTodoStatus = (projectId, todoId) => {
         const projects = getProjects();
         let result = false;
-        if(projects[projectId].todos[todoId].done === false) {
-            projects[projectId].todos[todoId].done = true;
+        if(projects[projectId].todos[todoId].isDone === false) {
+            projects[projectId].todos[todoId].isDone = true;
             result  = true;
         } else {
-            projects[projectId].todos[todoId].done = false;
+            projects[projectId].todos[todoId].isDone = false;
         }
         saveProjects(projects);
         return result;

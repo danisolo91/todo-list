@@ -1,4 +1,3 @@
-
 textarea:focus { outline: none; }
 
 .project-options {
@@ -29,4 +28,12 @@ textarea:focus { outline: none; }
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+#todo-title {
+    cursor: pointer;
+}
+
+.done {
+    text-decoration: line-through;
 }

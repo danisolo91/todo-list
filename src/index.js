@@ -1,5 +1,3 @@
-import '../node_modules/materialize-css/dist/css/materialize.min.css';
-import '../dist/style.css';
 import DOMController from './DOMController';
 
 const App = (() => {

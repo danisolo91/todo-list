@@ -190,9 +190,16 @@ const DOMController = (() => {
     const createTodo = (todo, id) => {
         const todoLi = document.createElement('li');
         const todoDiv = document.createElement('div');
-        
+        let todoTitleHTML = '';
+
+        if(todo.isDone === true) {
+            todoTitleHTML = `<span id="todo-title" class="done">${ todo.title }</span>`;
+        } else {
+            todoTitleHTML = `<span id="todo-title">${ todo.title }</span>`;
+        }
+
         todoDiv.innerHTML = `
-            <span id="todo-title">${ todo.title }</span>
+            ${ todoTitleHTML }
             <a class="secondary-content cursor-pointer ml-10" data-btn-type="delete">
                 <i class="material-icons">delete</i>
             </a>

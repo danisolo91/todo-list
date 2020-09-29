@@ -1,3 +1,3 @@
 This is my TODO List project for TheOdinProject curriculum.
 
-** It's still under development...
+Check it here: https://danisolo91.github.io/todo-list/

@@ -256,13 +256,12 @@ const DOMController = (() => {
         e.preventDefault();
 
         const projectId = e.target.elements.todoProjectId.value;
+        const todoIdInput = e.target.elements.todoId.value;
         const todo = {
             title: e.target.elements.todoTitle.value,
             description: e.target.elements.todoDescription.value,
             isDone: e.target.elements.todoIsDone.checked,
         };
-
-        const todoIdInput = e.target.elements.todoId.value;
 
         if(todoIdInput === 'new') {
             // Add new TODO to project
@@ -277,6 +276,11 @@ const DOMController = (() => {
             const todoTitleSpan = document.querySelector(`#${ todoIdInput }`)
                 .querySelector('#todo-title');
             todoTitleSpan.textContent = todo.title;
+            if(todo.isDone === true) {
+                todoTitleSpan.className = 'done';
+            } else {
+                todoTitleSpan.removeAttribute('class');
+            }
             ProjectController.editTodo(
                 getNumberId(projectId), 
                 getNumberId(todoIdInput), 

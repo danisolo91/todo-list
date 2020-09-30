@@ -257,7 +257,7 @@ const DOMController = (() => {
         const todo = {
             title: e.target.elements.todoTitle.value,
             description: e.target.elements.todoDescription.value,
-            isDone: false,
+            isDone: e.target.elements.todoIsDone.checked,
         };
 
         const todoIdInput = e.target.elements.todoId.value;
@@ -320,6 +320,7 @@ const DOMController = (() => {
         const todoTitleLabel = todoTitle.nextElementSibling;
         const todoDescription = todoForm.querySelector('#todoDescription');
         const todoDescriptionLabel = todoDescription.nextElementSibling;
+        const todoIsDone = todoForm.querySelector('#todoIsDone');
 
         todoProjectInput.removeAttribute('value');
         todoId.value = 'new';
@@ -327,6 +328,7 @@ const DOMController = (() => {
         todoTitleLabel.removeAttribute('class');
         todoDescription.value = null;
         todoDescriptionLabel.removeAttribute('class');
+        todoIsDone.checked = false;
     };
 
     return { renderProjects }

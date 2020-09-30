@@ -235,6 +235,7 @@ const DOMController = (() => {
             const todoTitleLabel = todoTitle.nextElementSibling;
             const todoDescription = document.querySelector('#todoDescription');
             const todoDescriptionLabel = todoDescription.nextElementSibling;
+            const todoIsDone = document.querySelector('#todoIsDone');
             const todo = ProjectController.getTodo(
                 getNumberId(projectLi.id),
                 getNumberId(todoLi.id),
@@ -245,6 +246,7 @@ const DOMController = (() => {
             todoDescription.value = todo.description;
             todoTitleLabel.className = 'active';
             todoDescriptionLabel.className = 'active';
+            todoIsDone.checked = todo.isDone;
         }
 
         todoModalInstance.open();
